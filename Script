@@ -23,13 +23,8 @@ task.spawn(function()
     game.ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(args))
 end)
 
--- Create Tabs
-local AimTab = Window:CreateTab("Aimbot")
-local ESPTab = Window:CreateTab("ESP")
-local PlayerEditorTab = Window:CreateTab("Player Editor")
-local MiscTab = Window:CreateTab("Miscellaneous")
-local ExploitsTab = Window:CreateTab("Exploits")
-local AutoFarmTab = Window:CreateTab("AutoFarm")
+-- Create Main Tab
+local MainTab = Window:CreateTab("Khoas Hub")
 
 -- Auto-Aim Settings
 local aimEnabled = false
@@ -47,8 +42,8 @@ local espShowNames = true
 -- Auto Farm Toggle
 local autoFarmEnabled = false
 
--- Toggle Auto-Aim
-AimTab:CreateToggle({
+-- Add Features to Main Tab
+MainTab:CreateToggle({
     Name = "Enable Aimbot",
     Default = false,
     Callback = function(value)
@@ -56,7 +51,7 @@ AimTab:CreateToggle({
     end
 })
 
-AimTab:CreateSlider({
+MainTab:CreateSlider({
     Name = "Aim Radius",
     Min = 50,
     Max = 500,
@@ -66,7 +61,7 @@ AimTab:CreateSlider({
     end
 })
 
-AimTab:CreateSlider({
+MainTab:CreateSlider({
     Name = "Aim Speed",
     Min = 1,
     Max = 10,
@@ -76,7 +71,7 @@ AimTab:CreateSlider({
     end
 })
 
-AimTab:CreateToggle({
+MainTab:CreateToggle({
     Name = "Enable Silent Aim",
     Default = false,
     Callback = function(value)
@@ -84,8 +79,7 @@ AimTab:CreateToggle({
     end
 })
 
--- Toggle ESP
-ESPTab:CreateToggle({
+MainTab:CreateToggle({
     Name = "Enable ESP",
     Default = false,
     Callback = function(value)
@@ -93,7 +87,7 @@ ESPTab:CreateToggle({
     end
 })
 
-ESPTab:CreateToggle({
+MainTab:CreateToggle({
     Name = "Show Player Names",
     Default = true,
     Callback = function(value)
@@ -101,7 +95,7 @@ ESPTab:CreateToggle({
     end
 })
 
-ESPTab:CreateToggle({
+MainTab:CreateToggle({
     Name = "Show Health",
     Default = true,
     Callback = function(value)
@@ -109,7 +103,7 @@ ESPTab:CreateToggle({
     end
 })
 
-ESPTab:CreateToggle({
+MainTab:CreateToggle({
     Name = "Show Distance",
     Default = true,
     Callback = function(value)
@@ -117,43 +111,21 @@ ESPTab:CreateToggle({
     end
 })
 
--- Player Editor Features
-PlayerEditorTab:CreateButton({
-    Name = "List Player Variables",
-    Callback = function()
-        for _, player in pairs(game.Players:GetPlayers()) do
-            print("Player: " .. player.Name)
-            for _, value in pairs(player:GetChildren()) do
-                print(value.Name .. " - " .. tostring(value))
-            end
-        end
-    end
-})
-
-PlayerEditorTab:CreateButton({
-    Name = "Modify Player Speed",
-    Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
-    end
-})
-
--- Miscellaneous Features
-MiscTab:CreateButton({
+MainTab:CreateButton({
     Name = "Enable Super Jump",
     Callback = function()
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150
     end
 })
 
-MiscTab:CreateButton({
+MainTab:CreateButton({
     Name = "Infinite Energy",
     Callback = function()
         game.Players.LocalPlayer.Character.Humanoid.MaxStamina = math.huge
     end
 })
 
--- Exploits Features
-ExploitsTab:CreateButton({
+MainTab:CreateButton({
     Name = "Fly Hack",
     Callback = function()
         local humanoid = game.Players.LocalPlayer.Character.HumanoidRootPart
@@ -163,15 +135,14 @@ ExploitsTab:CreateButton({
     end
 })
 
-ExploitsTab:CreateButton({
+MainTab:CreateButton({
     Name = "Speed Hack",
     Callback = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200
     end
 })
 
--- AutoFarm Features
-AutoFarmTab:CreateToggle({
+MainTab:CreateToggle({
     Name = "Auto Farm Fruits",
     Default = false,
     Callback = function(value)
@@ -179,7 +150,7 @@ AutoFarmTab:CreateToggle({
     end
 })
 
-AutoFarmTab:CreateToggle({
+MainTab:CreateToggle({
     Name = "Auto Attack NPCs",
     Default = false,
     Callback = function(value)
@@ -190,7 +161,7 @@ AutoFarmTab:CreateToggle({
     end
 })
 
-AutoFarmTab:CreateToggle({
+MainTab:CreateToggle({
     Name = "Auto Collect Drops",
     Default = false,
     Callback = function(value)
@@ -202,6 +173,11 @@ AutoFarmTab:CreateToggle({
                 end
             end
         end
+    end
+})
+
+print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
+
     end
 })
 
