@@ -32,28 +32,27 @@ local ExploitsTab = Window:CreateTab("Exploits")
 local AutoFarmTab = Window:CreateTab("AutoFarm")
 
 -- Auto-Aim Settings
-local aimEnabled = Window:CreateConfig("AimEnabled", false)
-local aimRadius = Window:CreateConfig("AimRadius", 100)
-local aimSpeed = Window:CreateConfig("AimSpeed", 5)
-local aimSmoothness = Window:CreateConfig("AimSmoothness", 0.1)
-local silentAim = Window:CreateConfig("SilentAim", false)
+local aimEnabled = false
+local aimRadius = 100
+local aimSpeed = 5
+local aimSmoothness = 0.1
+local silentAim = false
 
 -- ESP Settings
-local espEnabled = Window:CreateConfig("ESPEnabled", false)
-local espShowHealth = Window:CreateConfig("ESPShowHealth", true)
-local espShowDistance = Window:CreateConfig("ESPShowDistance", true)
-local espShowNames = Window:CreateConfig("ESPShowNames", true)
+local espEnabled = false
+local espShowHealth = true
+local espShowDistance = true
+local espShowNames = true
 
 -- Auto Farm Toggle
-local autoFarmEnabled = Window:CreateConfig("AutoFarmEnabled", false)
+local autoFarmEnabled = false
 
 -- Toggle Auto-Aim
 AimTab:CreateToggle({
     Name = "Enable Aimbot",
-    Default = aimEnabled,
+    Default = false,
     Callback = function(value)
         aimEnabled = value
-        Window:SaveConfig()
     end
 })
 
@@ -61,10 +60,9 @@ AimTab:CreateSlider({
     Name = "Aim Radius",
     Min = 50,
     Max = 500,
-    Default = aimRadius,
+    Default = 100,
     Callback = function(value)
         aimRadius = value
-        Window:SaveConfig()
     end
 })
 
@@ -72,29 +70,26 @@ AimTab:CreateSlider({
     Name = "Aim Speed",
     Min = 1,
     Max = 10,
-    Default = aimSpeed,
+    Default = 5,
     Callback = function(value)
         aimSpeed = value
-        Window:SaveConfig()
     end
 })
 
 -- Toggle ESP
 ESPTab:CreateToggle({
     Name = "Enable ESP",
-    Default = espEnabled,
+    Default = false,
     Callback = function(value)
         espEnabled = value
-        Window:SaveConfig()
     end
 })
 
 ESPTab:CreateToggle({
     Name = "Show Player Names",
-    Default = espShowNames,
+    Default = true,
     Callback = function(value)
         espShowNames = value
-        Window:SaveConfig()
     end
 })
 
@@ -130,6 +125,29 @@ ExploitsTab:CreateButton({
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200
     end
 })
+
+-- AutoFarm Features
+AutoFarmTab:CreateToggle({
+    Name = "Auto Farm Fruits",
+    Default = false,
+    Callback = function(value)
+        autoFarmEnabled = value
+    end
+})
+
+AutoFarmTab:CreateToggle({
+    Name = "Auto Attack NPCs",
+    Default = false,
+    Callback = function(value)
+        while value do
+            game.ReplicatedStorage.Remotes.Combat:FireServer("Melee")
+            wait(0.5)
+        end
+    end
+})
+
+print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
+
 
 print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
 
