@@ -1,0 +1,177 @@
+-- Load UI Library (Using Rayfield UI from Sirius)
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+-- Create Window
+local Window = Rayfield:CreateWindow({
+    Name = "Khoas",
+    LoadingTitle = "Loading Khoas Hub...",
+    LoadingSubtitle = "Please wait",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "KhoasHub",
+        FileName = "Config"
+    }
+})
+
+-- Create Tabs
+local AimTab = Window:CreateTab("Aimbot")
+local ESPTab = Window:CreateTab("ESP")
+local PlayerEditorTab = Window:CreateTab("Player Editor")
+local MiscTab = Window:CreateTab("Miscellaneous")
+local ExploitsTab = Window:CreateTab("Exploits")
+local AutoFarmTab = Window:CreateTab("AutoFarm")
+
+-- Auto-Aim Settings
+local aimEnabled = false
+local aimRadius = 100
+local aimSpeed = 5
+local aimSmoothness = 0.1
+local silentAim = false
+
+-- ESP Settings
+local espEnabled = false
+local espShowHealth = true
+local espShowDistance = true
+local espShowNames = true
+
+-- Auto Farm Toggle
+local autoFarmEnabled = false
+
+-- Server Hop Function
+local function serverHop()
+    local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+    for _, server in ipairs(servers.data) do
+        if server.playing < server.maxPlayers then
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, server.id, game.Players.LocalPlayer)
+            break
+        end
+    end
+end
+
+-- Auto Store Fruits Function
+local function autoStoreFruits()
+    local backpack = game.Players.LocalPlayer.Backpack
+    for _, item in ipairs(backpack:GetChildren()) do
+        if item:IsA("Tool") and item:FindFirstChild("Fruit") then
+            game.ReplicatedStorage.Remotes.StoreFruit:InvokeServer(item)
+        end
+    end
+end
+
+-- Teleport to Items Function
+local function teleportToItems()
+    local worldOrigin = game.Workspace:FindFirstChild("_WorldOrigin")
+    if worldOrigin then
+        local fruitSpawns = worldOrigin:FindFirstChild("FruitSpawns")
+        if fruitSpawns and #fruitSpawns:GetChildren() > 0 then
+            for _, item in ipairs(fruitSpawns:GetChildren()) do
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = item.CFrame
+                wait(1) -- Small delay between teleports
+            end
+            wait(60) -- Wait one minute before checking again
+            autoStoreFruits() -- Store fruits before leaving
+        else
+            autoStoreFruits() -- Store any fruits in inventory before hopping
+            serverHop() -- No items found, hop servers
+        end
+    end
+end
+
+-- AutoFarm Toggle
+AutoFarmTab:CreateToggle({
+    Name = "Auto Farm Fruits",
+    Default = false,
+    Callback = function(value)
+        autoFarmEnabled = value
+        while autoFarmEnabled do
+            teleportToItems()
+            wait(5)
+        end
+    end
+})
+
+-- Toggle Auto-Aim
+AimTab:CreateToggle({
+    Name = "Enable Aimbot",
+    Default = false,
+    Callback = function(value)
+        aimEnabled = value
+    end
+})
+
+-- Silent Aim Toggle
+AimTab:CreateToggle({
+    Name = "Enable Silent Aim",
+    Default = false,
+    Callback = function(value)
+        silentAim = value
+    end
+})
+
+-- Aim Radius Slider
+AimTab:CreateSlider({
+    Name = "Aim Radius",
+    Min = 50,
+    Max = 500,
+    Default = 100,
+    Callback = function(value)
+        aimRadius = value
+    end
+})
+
+-- Aim Speed Slider
+AimTab:CreateSlider({
+    Name = "Aim Speed",
+    Min = 1,
+    Max = 10,
+    Default = 5,
+    Callback = function(value)
+        aimSpeed = value
+    end
+})
+
+-- Toggle ESP
+ESPTab:CreateToggle({
+    Name = "Enable ESP",
+    Default = false,
+    Callback = function(value)
+        espEnabled = value
+    end
+})
+
+-- Show Names Toggle
+ESPTab:CreateToggle({
+    Name = "Show Player Names",
+    Default = true,
+    Callback = function(value)
+        espShowNames = value
+    end
+})
+
+-- Miscellaneous Features
+MiscTab:CreateButton({
+    Name = "Enable Super Jump",
+    Callback = function()
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150
+    end
+})
+
+-- Exploits Features
+ExploitsTab:CreateButton({
+    Name = "Fly Hack",
+    Callback = function()
+        local humanoid = game.Players.LocalPlayer.Character.HumanoidRootPart
+        while task.wait() do
+            humanoid.Velocity = Vector3.new(0, 50, 0)
+        end
+    end
+})
+
+ExploitsTab:CreateButton({
+    Name = "Speed Hack",
+    Callback = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200        
+    end
+})
+
+print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
