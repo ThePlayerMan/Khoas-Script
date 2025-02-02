@@ -66,13 +66,13 @@ local function teleportToItems()
         if fruitSpawns and #fruitSpawns:GetChildren() > 0 then
             for _, item in ipairs(fruitSpawns:GetChildren()) do
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = item.CFrame
-                wait(1) -- Small delay between teleports
+                wait(1)
             end
-            wait(60) -- Wait one minute before checking again
-            autoStoreFruits() -- Store fruits before leaving
+            wait(60)
+            autoStoreFruits()
         else
-            autoStoreFruits() -- Store any fruits in inventory before hopping
-            serverHop() -- No items found, hop servers
+            autoStoreFruits()
+            serverHop()
         end
     end
 end
@@ -90,6 +90,17 @@ AutoFarmTab:CreateToggle({
     end
 })
 
+AutoFarmTab:CreateToggle({
+    Name = "Auto Attack NPCs",
+    Default = false,
+    Callback = function(value)
+        while value do
+            game.ReplicatedStorage.Remotes.Combat:FireServer("Melee")
+            wait(0.5)
+        end
+    end
+})
+
 -- Toggle Auto-Aim
 AimTab:CreateToggle({
     Name = "Enable Aimbot",
@@ -99,34 +110,14 @@ AimTab:CreateToggle({
     end
 })
 
--- Silent Aim Toggle
 AimTab:CreateToggle({
-    Name = "Enable Silent Aim",
+    Name = "Enable Auto Parry",
     Default = false,
     Callback = function(value)
-        silentAim = value
-    end
-})
-
--- Aim Radius Slider
-AimTab:CreateSlider({
-    Name = "Aim Radius",
-    Min = 50,
-    Max = 500,
-    Default = 100,
-    Callback = function(value)
-        aimRadius = value
-    end
-})
-
--- Aim Speed Slider
-AimTab:CreateSlider({
-    Name = "Aim Speed",
-    Min = 1,
-    Max = 10,
-    Default = 5,
-    Callback = function(value)
-        aimSpeed = value
+        while value do
+            game.ReplicatedStorage.Remotes.Parry:FireServer()
+            wait(1)
+        end
     end
 })
 
@@ -139,12 +130,17 @@ ESPTab:CreateToggle({
     end
 })
 
--- Show Names Toggle
 ESPTab:CreateToggle({
-    Name = "Show Player Names",
+    Name = "Show Fruit Locations",
     Default = true,
     Callback = function(value)
-        espShowNames = value
+        if value then
+            for _, fruit in ipairs(game.Workspace:GetChildren()) do
+                if fruit:IsA("Model") and fruit:FindFirstChild("Fruit") then
+                    print("Fruit found at: " .. tostring(fruit.Position))
+                end
+            end
+        end
     end
 })
 
@@ -153,6 +149,13 @@ MiscTab:CreateButton({
     Name = "Enable Super Jump",
     Callback = function()
         game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150
+    end
+})
+
+MiscTab:CreateButton({
+    Name = "Infinite Energy",
+    Callback = function()
+        game.Players.LocalPlayer.Character.Humanoid.MaxStamina = math.huge
     end
 })
 
@@ -170,8 +173,10 @@ ExploitsTab:CreateButton({
 ExploitsTab:CreateButton({
     Name = "Speed Hack",
     Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200        
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200
     end
 })
+
+print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
 
 print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
