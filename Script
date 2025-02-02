@@ -26,23 +26,20 @@ end)
 -- Create Main Tab
 local MainTab = Window:CreateTab("Khoas Hub")
 
--- Auto-Aim Settings
+-- Variables
 local aimEnabled = false
 local aimRadius = 100
 local aimSpeed = 5
-local aimSmoothness = 0.1
 local silentAim = false
-
--- ESP Settings
 local espEnabled = false
 local espShowHealth = true
 local espShowDistance = true
 local espShowNames = true
-
--- Auto Farm Toggle
 local autoFarmEnabled = false
+local autoAttackEnabled = false
+local autoCollectDropsEnabled = false
 
--- Add Features to Main Tab
+-- Aimbot Settings
 MainTab:CreateToggle({
     Name = "Enable Aimbot",
     Default = false,
@@ -79,6 +76,7 @@ MainTab:CreateToggle({
     end
 })
 
+-- ESP Settings
 MainTab:CreateToggle({
     Name = "Enable ESP",
     Default = false,
@@ -111,6 +109,44 @@ MainTab:CreateToggle({
     end
 })
 
+-- Auto Farm Settings
+MainTab:CreateToggle({
+    Name = "Auto Farm Fruits",
+    Default = false,
+    Callback = function(value)
+        autoFarmEnabled = value
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Auto Attack NPCs",
+    Default = false,
+    Callback = function(value)
+        autoAttackEnabled = value
+        while autoAttackEnabled do
+            game.ReplicatedStorage.Remotes.Combat:FireServer("Melee")
+            task.wait(0.5)
+        end
+    end
+})
+
+MainTab:CreateToggle({
+    Name = "Auto Collect Drops",
+    Default = false,
+    Callback = function(value)
+        autoCollectDropsEnabled = value
+        while autoCollectDropsEnabled do
+            for _, item in ipairs(game.Workspace:GetChildren()) do
+                if item:IsA("Tool") then
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = item.CFrame
+                    task.wait(1)
+                end
+            end
+        end
+    end
+})
+
+-- Misc Features
 MainTab:CreateButton({
     Name = "Enable Super Jump",
     Callback = function()
@@ -125,6 +161,7 @@ MainTab:CreateButton({
     end
 })
 
+-- Exploits
 MainTab:CreateButton({
     Name = "Fly Hack",
     Callback = function()
@@ -139,40 +176,6 @@ MainTab:CreateButton({
     Name = "Speed Hack",
     Callback = function()
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Auto Farm Fruits",
-    Default = false,
-    Callback = function(value)
-        autoFarmEnabled = value
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Auto Attack NPCs",
-    Default = false,
-    Callback = function(value)
-        while value do
-            game.ReplicatedStorage.Remotes.Combat:FireServer("Melee")
-            wait(0.5)
-        end
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Auto Collect Drops",
-    Default = false,
-    Callback = function(value)
-        while value do
-            for _, item in ipairs(game.Workspace:GetChildren()) do
-                if item:IsA("Tool") then
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = item.CFrame
-                    wait(1)
-                end
-            end
-        end
     end
 })
 
