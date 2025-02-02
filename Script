@@ -13,6 +13,16 @@ local Window = Rayfield:CreateWindow({
     }
 })
 
+-- Auto-select Pirate Team on Join
+task.spawn(function()
+    repeat wait() until game.Players.LocalPlayer
+    local args = {
+        [1] = "Team",
+        [2] = "Pirates"
+    }
+    game.ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(args))
+end)
+
 -- Create Tabs
 local AimTab = Window:CreateTab("Aimbot")
 local ESPTab = Window:CreateTab("ESP")
@@ -22,125 +32,69 @@ local ExploitsTab = Window:CreateTab("Exploits")
 local AutoFarmTab = Window:CreateTab("AutoFarm")
 
 -- Auto-Aim Settings
-local aimEnabled = false
-local aimRadius = 100
-local aimSpeed = 5
-local aimSmoothness = 0.1
-local silentAim = false
+local aimEnabled = Window:CreateConfig("AimEnabled", false)
+local aimRadius = Window:CreateConfig("AimRadius", 100)
+local aimSpeed = Window:CreateConfig("AimSpeed", 5)
+local aimSmoothness = Window:CreateConfig("AimSmoothness", 0.1)
+local silentAim = Window:CreateConfig("SilentAim", false)
 
 -- ESP Settings
-local espEnabled = false
-local espShowHealth = true
-local espShowDistance = true
-local espShowNames = true
+local espEnabled = Window:CreateConfig("ESPEnabled", false)
+local espShowHealth = Window:CreateConfig("ESPShowHealth", true)
+local espShowDistance = Window:CreateConfig("ESPShowDistance", true)
+local espShowNames = Window:CreateConfig("ESPShowNames", true)
 
 -- Auto Farm Toggle
-local autoFarmEnabled = false
-
--- Server Hop Function
-local function serverHop()
-    local servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
-    for _, server in ipairs(servers.data) do
-        if server.playing < server.maxPlayers then
-            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, server.id, game.Players.LocalPlayer)
-            break
-        end
-    end
-end
-
--- Auto Store Fruits Function
-local function autoStoreFruits()
-    local backpack = game.Players.LocalPlayer.Backpack
-    for _, item in ipairs(backpack:GetChildren()) do
-        if item:IsA("Tool") and item:FindFirstChild("Fruit") then
-            game.ReplicatedStorage.Remotes.StoreFruit:InvokeServer(item)
-        end
-    end
-end
-
--- Teleport to Items Function
-local function teleportToItems()
-    local worldOrigin = game.Workspace:FindFirstChild("_WorldOrigin")
-    if worldOrigin then
-        local fruitSpawns = worldOrigin:FindFirstChild("FruitSpawns")
-        if fruitSpawns and #fruitSpawns:GetChildren() > 0 then
-            for _, item in ipairs(fruitSpawns:GetChildren()) do
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = item.CFrame
-                wait(1)
-            end
-            wait(60)
-            autoStoreFruits()
-        else
-            autoStoreFruits()
-            serverHop()
-        end
-    end
-end
-
--- AutoFarm Toggle
-AutoFarmTab:CreateToggle({
-    Name = "Auto Farm Fruits",
-    Default = false,
-    Callback = function(value)
-        autoFarmEnabled = value
-        while autoFarmEnabled do
-            teleportToItems()
-            wait(5)
-        end
-    end
-})
-
-AutoFarmTab:CreateToggle({
-    Name = "Auto Attack NPCs",
-    Default = false,
-    Callback = function(value)
-        while value do
-            game.ReplicatedStorage.Remotes.Combat:FireServer("Melee")
-            wait(0.5)
-        end
-    end
-})
+local autoFarmEnabled = Window:CreateConfig("AutoFarmEnabled", false)
 
 -- Toggle Auto-Aim
 AimTab:CreateToggle({
     Name = "Enable Aimbot",
-    Default = false,
+    Default = aimEnabled,
     Callback = function(value)
         aimEnabled = value
+        Window:SaveConfig()
     end
 })
 
-AimTab:CreateToggle({
-    Name = "Enable Auto Parry",
-    Default = false,
+AimTab:CreateSlider({
+    Name = "Aim Radius",
+    Min = 50,
+    Max = 500,
+    Default = aimRadius,
     Callback = function(value)
-        while value do
-            game.ReplicatedStorage.Remotes.Parry:FireServer()
-            wait(1)
-        end
+        aimRadius = value
+        Window:SaveConfig()
+    end
+})
+
+AimTab:CreateSlider({
+    Name = "Aim Speed",
+    Min = 1,
+    Max = 10,
+    Default = aimSpeed,
+    Callback = function(value)
+        aimSpeed = value
+        Window:SaveConfig()
     end
 })
 
 -- Toggle ESP
 ESPTab:CreateToggle({
     Name = "Enable ESP",
-    Default = false,
+    Default = espEnabled,
     Callback = function(value)
         espEnabled = value
+        Window:SaveConfig()
     end
 })
 
 ESPTab:CreateToggle({
-    Name = "Show Fruit Locations",
-    Default = true,
+    Name = "Show Player Names",
+    Default = espShowNames,
     Callback = function(value)
-        if value then
-            for _, fruit in ipairs(game.Workspace:GetChildren()) do
-                if fruit:IsA("Model") and fruit:FindFirstChild("Fruit") then
-                    print("Fruit found at: " .. tostring(fruit.Position))
-                end
-            end
-        end
+        espShowNames = value
+        Window:SaveConfig()
     end
 })
 
@@ -179,4 +133,3 @@ ExploitsTab:CreateButton({
 
 print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
 
-print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
