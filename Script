@@ -3,185 +3,68 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Create Window
 local Window = Rayfield:CreateWindow({
-    Name = "Khoas",
-    LoadingTitle = "Loading Khoas Hub...",
+    Name = "Khoas - Fruit Farm",
+    LoadingTitle = "Loading Khoas Fruit Farm...",
     LoadingSubtitle = "Please wait",
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = "KhoasHub",
+        FolderName = "KhoasFruitFarm",
         FileName = "Config"
     }
 })
 
--- Auto-select Pirate Team on Join
-task.spawn(function()
-    repeat wait() until game.Players.LocalPlayer
-    local args = {
-        [1] = "Team",
-        [2] = "Pirates"
-    }
-    game.ReplicatedStorage.Remotes.CommF_:InvokeServer(unpack(args))
-end)
-
 -- Create Main Tab
-local MainTab = Window:CreateTab("Khoas Hub")
+local MainTab = Window:CreateTab("Fruit Farm")
 
 -- Variables
-local aimEnabled = false
-local aimRadius = 100
-local aimSpeed = 5
-local silentAim = false
-local espEnabled = false
-local espShowHealth = true
-local espShowDistance = true
-local espShowNames = true
 local autoFarmEnabled = false
-local autoAttackEnabled = false
-local autoCollectDropsEnabled = false
+local fruitRainEnabled = false
 
--- Aimbot Settings
-MainTab:CreateToggle({
-    Name = "Enable Aimbot",
-    Default = false,
-    Callback = function(value)
-        aimEnabled = value
-    end
-})
-
-MainTab:CreateSlider({
-    Name = "Aim Radius",
-    Min = 50,
-    Max = 500,
-    Default = 100,
-    Callback = function(value)
-        aimRadius = value
-    end
-})
-
-MainTab:CreateSlider({
-    Name = "Aim Speed",
-    Min = 1,
-    Max = 10,
-    Default = 5,
-    Callback = function(value)
-        aimSpeed = value
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Enable Silent Aim",
-    Default = false,
-    Callback = function(value)
-        silentAim = value
-    end
-})
-
--- ESP Settings
-MainTab:CreateToggle({
-    Name = "Enable ESP",
-    Default = false,
-    Callback = function(value)
-        espEnabled = value
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Show Player Names",
-    Default = true,
-    Callback = function(value)
-        espShowNames = value
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Show Health",
-    Default = true,
-    Callback = function(value)
-        espShowHealth = value
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Show Distance",
-    Default = true,
-    Callback = function(value)
-        espShowDistance = value
-    end
-})
-
--- Auto Farm Settings
+-- Auto Farm Fruits
 MainTab:CreateToggle({
     Name = "Auto Farm Fruits",
     Default = false,
     Callback = function(value)
         autoFarmEnabled = value
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Auto Attack NPCs",
-    Default = false,
-    Callback = function(value)
-        autoAttackEnabled = value
-        while autoAttackEnabled do
-            game.ReplicatedStorage.Remotes.Combat:FireServer("Melee")
-            task.wait(0.5)
-        end
-    end
-})
-
-MainTab:CreateToggle({
-    Name = "Auto Collect Drops",
-    Default = false,
-    Callback = function(value)
-        autoCollectDropsEnabled = value
-        while autoCollectDropsEnabled do
-            for _, item in ipairs(game.Workspace:GetChildren()) do
-                if item:IsA("Tool") then
-                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = item.CFrame
+        while autoFarmEnabled do
+            local fruitSpawns = game.Workspace:FindFirstChild("_WorldOrigin"):FindFirstChild("FruitSpawns")
+            if fruitSpawns then
+                for _, fruit in ipairs(fruitSpawns:GetChildren()) do
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = fruit.CFrame
                     task.wait(1)
                 end
             end
+            task.wait(5)
         end
     end
 })
 
--- Misc Features
+-- Fruit Giver
 MainTab:CreateButton({
-    Name = "Enable Super Jump",
+    Name = "Get Random Fruit",
     Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = 150
+        local fruits = {"Bomb", "Spike", "Chop", "Flame", "Ice", "Sand", "Dark", "Light", "Magma", "Quake"}
+        local chosenFruit = fruits[math.random(1, #fruits)]
+        game.ReplicatedStorage.Remotes.GiveFruit:InvokeServer(chosenFruit)
+        Rayfield:Notify({Title = "Fruit Given", Content = "You received: " .. chosenFruit, Duration = 3})
     end
 })
 
-MainTab:CreateButton({
-    Name = "Infinite Energy",
-    Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.MaxStamina = math.huge
-    end
-})
-
--- Exploits
-MainTab:CreateButton({
-    Name = "Fly Hack",
-    Callback = function()
-        local humanoid = game.Players.LocalPlayer.Character.HumanoidRootPart
-        while task.wait() do
-            humanoid.Velocity = Vector3.new(0, 50, 0)
+-- Fruit Rain (Randomly Spawns Fruits)
+MainTab:CreateToggle({
+    Name = "Enable Fruit Rain",
+    Default = false,
+    Callback = function(value)
+        fruitRainEnabled = value
+        while fruitRainEnabled do
+            local newFruit = Instance.new("Part")
+            newFruit.Size = Vector3.new(2, 2, 2)
+            newFruit.Position = Vector3.new(math.random(-500, 500), 100, math.random(-500, 500))
+            newFruit.BrickColor = BrickColor.Random()
+            newFruit.Parent = game.Workspace
+            task.wait(3)
         end
     end
 })
 
-MainTab:CreateButton({
-    Name = "Speed Hack",
-    Callback = function()
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 200
-    end
-})
-
-print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
-
-    end
-})
-
-print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
+print("Khoas Fruit Farm Loaded - Press Right Ctrl to Open/Close UI")o Open/Close UI")
