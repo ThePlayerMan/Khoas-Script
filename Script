@@ -76,6 +76,14 @@ AimTab:CreateSlider({
     end
 })
 
+AimTab:CreateToggle({
+    Name = "Enable Silent Aim",
+    Default = false,
+    Callback = function(value)
+        silentAim = value
+    end
+})
+
 -- Toggle ESP
 ESPTab:CreateToggle({
     Name = "Enable ESP",
@@ -90,6 +98,42 @@ ESPTab:CreateToggle({
     Default = true,
     Callback = function(value)
         espShowNames = value
+    end
+})
+
+ESPTab:CreateToggle({
+    Name = "Show Health",
+    Default = true,
+    Callback = function(value)
+        espShowHealth = value
+    end
+})
+
+ESPTab:CreateToggle({
+    Name = "Show Distance",
+    Default = true,
+    Callback = function(value)
+        espShowDistance = value
+    end
+})
+
+-- Player Editor Features
+PlayerEditorTab:CreateButton({
+    Name = "List Player Variables",
+    Callback = function()
+        for _, player in pairs(game.Players:GetPlayers()) do
+            print("Player: " .. player.Name)
+            for _, value in pairs(player:GetChildren()) do
+                print(value.Name .. " - " .. tostring(value))
+            end
+        end
+    end
+})
+
+PlayerEditorTab:CreateButton({
+    Name = "Modify Player Speed",
+    Callback = function()
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 100
     end
 })
 
@@ -146,8 +190,19 @@ AutoFarmTab:CreateToggle({
     end
 })
 
+AutoFarmTab:CreateToggle({
+    Name = "Auto Collect Drops",
+    Default = false,
+    Callback = function(value)
+        while value do
+            for _, item in ipairs(game.Workspace:GetChildren()) do
+                if item:IsA("Tool") then
+                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = item.CFrame
+                    wait(1)
+                end
+            end
+        end
+    end
+})
+
 print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
-
-
-print("Khoas Hub Loaded - Press Right Ctrl to Open/Close UI")
-
